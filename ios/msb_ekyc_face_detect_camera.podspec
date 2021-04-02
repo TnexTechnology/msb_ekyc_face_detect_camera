@@ -21,6 +21,6 @@ Android and IOS support for ekyc library
   s.platform = :ios, '12.0'
 
   # Flutter.framework does not contain a i386 slice. Only x86_64 simulators are supported.
-  s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'VALID_ARCHS[sdk=iphonesimulator*]' => 'x86_64' }
+  s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'VALID_ARCHS[sdk=iphonesimulator*]' => 'x86_64' , 'HEADER_SEARCH_PATHS' => '$(PODS_ROOT)/GoogleMLKit/MLKitCore' }
   s.swift_version = '5.0'
 end
