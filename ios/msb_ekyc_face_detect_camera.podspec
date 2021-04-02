@@ -18,9 +18,9 @@ Android and IOS support for ekyc library
   s.dependency 'GoogleMLKit/TextRecognition'
   s.static_framework = true
   s.vendored_frameworks = ['eKYC.framework']
-  s.platform = :ios, '11.0'
+  s.platform = :ios, '10.0'
 
   # Flutter.framework does not contain a i386 slice. Only x86_64 simulators are supported.
-  s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'VALID_ARCHS' => 'armv7 arm64 x86_64' }
+  s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'VALID_ARCHS[sdk=iphonesimulator*]' => 'x86_64' }
   s.swift_version = '5.0'
 end
