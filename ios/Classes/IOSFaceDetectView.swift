@@ -245,7 +245,7 @@ extension IOSFaceDetectView: KYCVideoDelegate{
         let currentMiliseconds:Int = MSBEkycUtils.currentTimeInMiliseconds()
 
         var filePath: URL!
-        if let data = userImage!.jpegData(compressionQuality: 0.8) {
+        if let data = userImage?.jpegData(compressionQuality: 0.8) {
             filePath = MSBEkycUtils.getDocumentsDirectory().appendingPathComponent("faceImage_\(currentMiliseconds).jpeg")
             print("Begin save face_image to path: \(filePath.path)")
             try? data.write(to: filePath)
