@@ -8,17 +8,17 @@ part of '../../msb_ekyc_face_detect_camera.dart';
 class FaceDetectWidget extends StatefulWidget {
   ///
   /// Controller.
-  FaceDetectController _faceDetectController;
+  late FaceDetectController _faceDetectController;
 
   ///
   /// UnsupportedDescription
-  String _unsupportedDescription;
+  late String _unsupportedDescription;
 
   ///
   /// Constructor.
   FaceDetectWidget({
-    @required FaceDetectController faceDetectController,
-    String unsupportedDescription,
+    required FaceDetectController faceDetectController,
+    required String unsupportedDescription,
   }) {
     _faceDetectController = faceDetectController;
     _unsupportedDescription = unsupportedDescription;
@@ -32,14 +32,13 @@ class FaceDetectWidget extends StatefulWidget {
 
 ///
 /// _FaceDetectWidgetState
-class _FaceDetectWidgetState
-    extends State<FaceDetectWidget> {
-
+class _FaceDetectWidgetState extends State<FaceDetectWidget> {
   @override
   void initState() {
     super.initState();
     //Create
-    MSBEkycCameraFaceDetectPlatform.instance.addListener(_widgetCreatedListener);
+    MSBEkycCameraFaceDetectPlatform.instance
+        .addListener(_widgetCreatedListener);
     MSBEkycCameraFaceDetectPlatform.instance.unsupportedPlatformDescription =
         widget._unsupportedDescription;
   }
@@ -58,12 +57,14 @@ class _FaceDetectWidgetState
   void dispose() {
     super.dispose();
     //Release
-    MSBEkycCameraFaceDetectPlatform.instance.removeListener(_widgetCreatedListener);
+    MSBEkycCameraFaceDetectPlatform.instance
+        .removeListener(_widgetCreatedListener);
     widget._faceDetectController.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return MSBEkycCameraFaceDetectPlatform.instance.buildFaceDetectView(context);
+    return MSBEkycCameraFaceDetectPlatform.instance
+        .buildFaceDetectView(context);
   }
 }

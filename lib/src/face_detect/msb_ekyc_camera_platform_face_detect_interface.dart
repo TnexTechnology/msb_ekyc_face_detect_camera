@@ -14,7 +14,8 @@ abstract class MSBEkycCameraFaceDetectPlatform extends ChangeNotifier
   @visibleForTesting
   bool get isMock => false;
 
-  static MSBEkycCameraFaceDetectPlatform _instance = MSBEkycCameraFaceDetectPlugin();
+  static MSBEkycCameraFaceDetectPlatform _instance =
+      MSBEkycCameraFaceDetectPlugin();
 
   bool _isStartCamera = false;
   bool _isStartCameraPreview = false;
@@ -79,13 +80,14 @@ abstract class MSBEkycCameraFaceDetectPlatform extends ChangeNotifier
 
   ///
   /// Init camera without open Face Detect camera.
-  initCamera({List<dynamic> expectedGestures}) async {
+  initCamera({required List<dynamic> expectedGestures}) async {
     if (expectedGestures != null && expectedGestures.length > 0)
-      return await MSBEkycCameraPlatform.methodChannelFaceDetect.invokeMethod("initCamera",
-          <String, dynamic>{
-            'expectedGestures': expectedGestures,
-          });
-    return await MSBEkycCameraPlatform.methodChannelFaceDetect.invokeMethod("initCamera");
+      return await MSBEkycCameraPlatform.methodChannelFaceDetect
+          .invokeMethod("initCamera", <String, dynamic>{
+        'expectedGestures': expectedGestures,
+      });
+    return await MSBEkycCameraPlatform.methodChannelFaceDetect
+        .invokeMethod("initCamera");
   }
 
   ///
@@ -114,7 +116,8 @@ abstract class MSBEkycCameraFaceDetectPlatform extends ChangeNotifier
   /// Stop camera preview.
   stopCameraPreview() async {
     _isStartCameraPreview = false;
-    MSBEkycCameraPlatform.methodChannelFaceDetect.invokeMethod("stopCameraPreview");
+    MSBEkycCameraPlatform.methodChannelFaceDetect
+        .invokeMethod("stopCameraPreview");
   }
 
   ///

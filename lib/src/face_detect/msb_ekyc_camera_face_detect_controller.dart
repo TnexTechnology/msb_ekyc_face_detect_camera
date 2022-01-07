@@ -5,52 +5,52 @@ part of '../../msb_ekyc_face_detect_camera.dart';
 class FaceDetectController extends ValueNotifier<FaceDetectControllerValue> {
   ///
   /// Event
-  Function(dynamic event) _faceDetectEventHandler;
-  Function() _faceDetectViewCreated;
+  late Function(dynamic event) _faceDetectEventHandler;
+  late Function() _faceDetectViewCreated;
 
-  BuildContext _context;
-  StreamSubscription<dynamic> _eventSubscription;
+  late BuildContext _context;
+  late StreamSubscription<dynamic> _eventSubscription;
 
-  String _viewId;
-  List<dynamic> _expectedGestures;
+  late String _viewId;
+  late List<dynamic> _expectedGestures;
 
   ///
   /// Constructor.
-  FaceDetectController(BuildContext context, {
-    List<dynamic> expectedGestures,
-    faceDetectEventHandler(dynamic event),
-    faceDetectViewCreated(),
-  }) : super(const FaceDetectControllerValue.uninitialized()) {
+  FaceDetectController(
+    BuildContext context, {
+    required List<dynamic> expectedGestures,
+    required faceDetectEventHandler(dynamic event),
+    required faceDetectViewCreated(),
+  }) : super(FaceDetectControllerValue.uninitialized) {
     _context = context;
     _expectedGestures = expectedGestures;
-    _faceDetectEventHandler = faceDetectEventHandler??eventHandler;
-    _faceDetectViewCreated = faceDetectViewCreated??viewCreated;
+    _faceDetectEventHandler = faceDetectEventHandler;
+    _faceDetectViewCreated = faceDetectViewCreated;
   }
 
   Function() get faceDetectViewCreated => _faceDetectViewCreated;
 
-  bool get isStartCamera => MSBEkycCameraFaceDetectPlatform.instance.isStartCamera;
+  bool get isStartCamera =>
+      MSBEkycCameraFaceDetectPlatform.instance.isStartCamera;
   bool get isStartCameraPreview =>
       MSBEkycCameraFaceDetectPlatform.instance.isStartCameraPreview;
 
   bool get isOpenFlash => MSBEkycCameraFaceDetectPlatform.instance.isOpenFlash;
 
-  eventHandler (dynamic event) {
+  eventHandler(dynamic event) {
     final Map<dynamic, dynamic> map = event;
     print('face_detect_view_event_channel event receive: ' + event.toString());
     switch (map['eventType']) {
       case 'initSuccess':
         value = value.copyWith(
             isInitialized: true,
-            gestures: map["eventData"] != null ?
-            List<Gesture>.from(
-                json.decode(map["eventData"]).map((x) =>
-                    Gesture.fromJson(x))) : null,
-            currentGestureIndex: map["eventData"] != null ? 0 : -1
-        );
-    TargetPlatform platform = Theme
-            .of(_context)
-            .platform;
+            gestures: map["eventData"] != null
+                ? List<Gesture>.from(json
+                    .decode(map["eventData"])
+                    .map((x) => Gesture.fromJson(x)))
+                : null,
+            currentGestureIndex: map["eventData"] != null ? 0 : -1);
+        TargetPlatform platform = Theme.of(_context).platform;
         if (TargetPlatform.iOS == platform) {
           Future.delayed(Duration(seconds: 2), () {
             startCamera();
@@ -65,12 +65,12 @@ class FaceDetectController extends ValueNotifier<FaceDetectControllerValue> {
         break;
       case 'face_detect_event':
         print('Dart Face Detect event recieved: ${event['eventData']}');
-        Map <String, dynamic> eventData = json.decode(event['eventData']);
+        Map<String, dynamic> eventData = json.decode(event['eventData']);
         /*if (eventData['status'] != null && eventData['status'])*/ {
-          if (value.gestures != null && value.gestures.length > 0) {
-            int length = value.gestures.length;
+          if (value.gestures != null && value.gestures!.length > 0) {
+            int length = value.gestures!.length;
             for (int i = 0; i < length; i++) {
-              if (value.gestures[i].name == eventData['name']) {
+              if (value.gestures![i].name == eventData['name']) {
                 value = value.copyWith(currentGestureIndex: i + 1);
                 break;
               }
@@ -82,16 +82,19 @@ class FaceDetectController extends ValueNotifier<FaceDetectControllerValue> {
         break;
       case 'face_detect_success':
         print('Dart face_detect_success event recieved: ${event['eventData']}');
-        Map <String, dynamic> eventData = json.decode(event['eventData']);
+        Map<String, dynamic> eventData = json.decode(event['eventData']);
         if (eventData != null) {
           value = value.copyWith(successDetectData: eventData);
         }
         break;
       case "face_detect_event_failed":
-        print('Dart face_detect_event_failed event recieved: ${event['eventData']}');
-        Map <String, dynamic> eventData = {'image_file': '', 'video_file': ''};
+        print(
+            'Dart face_detect_event_failed event recieved: ${event['eventData']}');
+        Map<String, dynamic> eventData = {'image_file': '', 'video_file': ''};
 
-        value = value.copyWith(successDetectData: eventData, errorDescription: getErrorString(event['eventData']));
+        value = value.copyWith(
+            successDetectData: eventData,
+            errorDescription: getErrorString(event['eventData']));
         break;
     }
   }
@@ -114,14 +117,14 @@ class FaceDetectController extends ValueNotifier<FaceDetectControllerValue> {
         break;
       case "timeout":
         errorMsg =
-        "Đã quá thời gian thực hiện thao tác. Vui lòng thực hiện lại.";
+            "Đã quá thời gian thực hiện thao tác. Vui lòng thực hiện lại.";
         break;
     }
     return errorMsg;
   }
 
-  viewCreated () {
-    print ('Dart FaceDetectController: View created!!!');
+  viewCreated() {
+    print('Dart FaceDetectController: View created!!!');
     initCamera();
   }
 
@@ -135,8 +138,8 @@ class FaceDetectController extends ValueNotifier<FaceDetectControllerValue> {
   ///
   /// Init camera without open face detect.
   initCamera() async {
-    _viewId = await MSBEkycCameraFaceDetectPlatform.instance.initCamera(
-        expectedGestures: _expectedGestures);
+    _viewId = await MSBEkycCameraFaceDetectPlatform.instance
+        .initCamera(expectedGestures: _expectedGestures);
     print('Dart Face Detect Controller InitCamera respsone: ${_viewId}');
     if (_viewId.isNotEmpty) {
       _eventSubscription =
@@ -152,7 +155,7 @@ class FaceDetectController extends ValueNotifier<FaceDetectControllerValue> {
     MSBEkycCameraFaceDetectPlatform.instance.startCamera();
   }
 
-  restartDetect () {
+  restartDetect() {
     value = value.copyWith(currentGestureIndex: 0, successDetectData: {});
     MSBEkycCameraFaceDetectPlatform.instance.startCamera();
   }
@@ -196,32 +199,37 @@ class FaceDetectController extends ValueNotifier<FaceDetectControllerValue> {
 
 /// The state of a [FaceDetectController].
 class FaceDetectControllerValue {
-  const FaceDetectControllerValue({
-    this.isInitialized,
-    this.errorDescription,
-    this.previewSize,
-    this.gestures,
-    this.currentGestureIndex,
-    this.successDetectData
-  });
+  // FaceDetectControllerValue(
+  //     {this.isInitialized,
+  //     this.errorDescription,
+  //     this.previewSize,
+  //     this.gestures,
+  //     this.currentGestureIndex,
+  //     this.successDetectData});
 
-  const FaceDetectControllerValue.uninitialized()
-      : this(
-    isInitialized: false,
-    gestures: null,
-    currentGestureIndex: -1,
-    successDetectData: const {}
-  );
+  static FaceDetectControllerValue uninitialized = FaceDetectControllerValue(
+      isInitialized: false,
+      gestures: null,
+      currentGestureIndex: -1,
+      successDetectData: const {});
 
   /// True after [FaceDetectController.initialize] has completed successfully.
   final bool isInitialized;
 
-  final String errorDescription;
+  final String? errorDescription;
 
   /// The size of the preview in pixels.
   ///
   /// Is `null` until  [isInitialized] is `true`.
   final Size previewSize;
+
+  FaceDetectControllerValue(
+      {required this.isInitialized,
+      this.errorDescription,
+      this.previewSize = Size.zero,
+      this.gestures,
+      required this.currentGestureIndex,
+      required this.successDetectData});
 
   /// Convenience getter for `previewSize.height / previewSize.width`.
   ///
@@ -230,27 +238,25 @@ class FaceDetectControllerValue {
 
   bool get hasError => errorDescription != null;
 
-  final List <Gesture> gestures;
+  final List<Gesture>? gestures;
   final int currentGestureIndex;
 
   final Map<String, dynamic> successDetectData;
 
-  FaceDetectControllerValue copyWith({
-    bool isInitialized,
-    String errorDescription,
-    Size previewSize,
-    List <Gesture> gestures,
-    int currentGestureIndex,
-    Map<String, dynamic> successDetectData
-  }) {
+  FaceDetectControllerValue copyWith(
+      {bool isInitialized = false,
+      String? errorDescription,
+      Size previewSize = Size.zero,
+      List<Gesture>? gestures,
+      int currentGestureIndex = 1,
+      Map<String, dynamic> successDetectData = const {}}) {
     return FaceDetectControllerValue(
-        isInitialized: isInitialized ?? this.isInitialized,
+        isInitialized: isInitialized,
         errorDescription: errorDescription,
-        previewSize: previewSize ?? this.previewSize,
-        gestures: gestures ?? this.gestures,
-        currentGestureIndex: currentGestureIndex ?? this.currentGestureIndex,
-        successDetectData:successDetectData ?? this.successDetectData
-    );
+        previewSize: previewSize,
+        gestures: gestures,
+        currentGestureIndex: currentGestureIndex,
+        successDetectData: successDetectData);
   }
 
   @override
@@ -267,32 +273,32 @@ class FaceDetectControllerValue {
 
 class Gesture {
   Gesture({
-    this.endTime,
-    this.name,
-    this.startTime,
-    this.status,
-    this.time,
+    required this.endTime,
+    required this.name,
+    required this.startTime,
+    required this.status,
+    required this.time,
   });
 
-  int endTime;
-  String name;
-  int startTime;
-  bool status;
-  int time;
+  late int endTime;
+  late String name;
+  late int startTime;
+  late bool status;
+  late int time;
 
-  Gesture copyWith({
+  Gesture copyWith(
     int endTime,
     String name,
     int startTime,
     bool status,
     int time,
-  }) =>
+  ) =>
       Gesture(
-        endTime: endTime ?? this.endTime,
-        name: name ?? this.name,
-        startTime: startTime ?? this.startTime,
-        status: status ?? this.status,
-        time: time ?? this.time,
+        endTime: endTime,
+        name: name,
+        startTime: startTime,
+        status: status,
+        time: time,
       );
 
   factory Gesture.fromRawJson(String str) => Gesture.fromJson(json.decode(str));
@@ -300,18 +306,18 @@ class Gesture {
   String toRawJson() => json.encode(toJson());
 
   factory Gesture.fromJson(Map<String, dynamic> json) => Gesture(
-    endTime: json["end_time"] == null ? null : json["end_time"],
-    name: json["name"] == null ? null : json["name"],
-    startTime: json["start_time"] == null ? null : json["start_time"],
-    status: json["status"] == null ? null : json["status"],
-    time: json["time"] == null ? null : json["time"],
-  );
+        endTime: json["end_time"] == null ? null : json["end_time"],
+        name: json["name"] == null ? null : json["name"],
+        startTime: json["start_time"] == null ? null : json["start_time"],
+        status: json["status"] == null ? null : json["status"],
+        time: json["time"] == null ? null : json["time"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "end_time": endTime == null ? null : endTime,
-    "name": name == null ? null : name,
-    "start_time": startTime == null ? null : startTime,
-    "status": status == null ? null : status,
-    "time": time == null ? null : time,
-  };
+        "end_time": endTime == null ? null : endTime,
+        "name": name == null ? null : name,
+        "start_time": startTime == null ? null : startTime,
+        "status": status == null ? null : status,
+        "time": time == null ? null : time,
+      };
 }
