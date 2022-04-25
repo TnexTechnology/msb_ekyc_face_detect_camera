@@ -19,8 +19,8 @@ rootProject.allprojects {
         mavenCentral()
         jcenter()
         flatDir {
-            dirs 'libs'
-            //dirs project(':msb_ekyc_face_detect_camera').file('libs')
+            //dirs 'libs'
+            dirs project(':msb_ekyc_face_detect_camera').file('libs')
         }
     }
 }
